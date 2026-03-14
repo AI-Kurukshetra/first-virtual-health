@@ -1,6 +1,7 @@
 "use client";
 
-import { useFormStatus, useFormState } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import {
   joinWaitlist,
   waitlistInitialState,
@@ -20,7 +21,7 @@ const SubmitButton = () => {
 };
 
 export const WaitlistForm = () => {
-  const [state, formAction] = useFormState(joinWaitlist, waitlistInitialState);
+  const [state, formAction] = useActionState(joinWaitlist, waitlistInitialState);
 
   return (
     <form action={formAction} className="space-y-4 rounded-2xl border border-zinc-200/80 bg-white/60 p-6 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/50">
@@ -63,4 +64,3 @@ export const WaitlistForm = () => {
     </form>
   );
 };
-

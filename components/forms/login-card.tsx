@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useFormState, useFormStatus } from "react-dom";
-import {
-  authInitialState,
-  loginAction,
-} from "@/app/actions/auth";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+import { loginAction, type AuthFormState } from "@/app/actions/auth";
 
 const authOptions = [
   { label: "Email & Password", description: "SSO-ready auth for admins & planners." },
@@ -26,8 +24,10 @@ const SubmitButton = () => {
   );
 };
 
+const initialState: AuthFormState = { status: "idle", message: "" };
+
 export const LoginCard = () => {
-  const [state, formAction] = useFormState(loginAction, authInitialState);
+  const [state, formAction] = useActionState(loginAction, initialState);
 
   return (
     <div className="rounded-[32px] border border-white/15 bg-black/40 p-8 text-white shadow-2xl shadow-emerald-500/10 backdrop-blur-xl">

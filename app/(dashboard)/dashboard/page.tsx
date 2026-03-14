@@ -16,6 +16,7 @@ import {
   insights,
 } from "@/lib/data/mock";
 import { logoutAction } from "@/app/actions/auth";
+import Link from "next/link";
 
 export default function DashboardPage() {
   return (
@@ -37,6 +38,12 @@ export default function DashboardPage() {
             <button className="rounded-full border border-zinc-200 px-5 py-2 text-sm font-semibold text-zinc-700 transition hover:border-zinc-400 dark:border-white/10 dark:text-white">
               Export report
             </button>
+            <Link
+              href="/dashboard/requests"
+              className="rounded-full border border-zinc-200 px-5 py-2 text-sm font-semibold text-zinc-700 transition hover:border-zinc-400 dark:border-white/10 dark:text-white"
+            >
+              View requests
+            </Link>
             <form action={logoutAction}>
               <button className="rounded-full border border-zinc-200 px-5 py-2 text-sm font-semibold text-zinc-700 transition hover:border-zinc-400 dark:border-white/10 dark:text-white">
                 Sign out

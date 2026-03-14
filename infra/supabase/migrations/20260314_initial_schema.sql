@@ -459,6 +459,7 @@ alter table public.webhooks enable row level security;
 alter table public.predictive_insights enable row level security;
 alter table public.automation_rules enable row level security;
 alter table public.waitlist enable row level security;
+alter table if exists public.workspace_requests enable row level security;
 
 do $$
 begin
@@ -479,6 +480,52 @@ begin
       and policyname = 'waitlist service select'
   ) then
     create policy "waitlist service select" on public.waitlist
+      for select using (auth.role() = 'service_role');
+  end if;
+end
+$$;
+
+do $$
+begin
+  if not exists (
+    select 1 from information_schema.tables
+    where table_schema = 'public' and table_name = 'workspace_requests'
+  ) then
+    create table public.workspace_requests (
+      id uuid primary key default gen_random_uuid(),
+      full_name text not null,
+      company text not null,
+      email text not null,
+      plants integer,
+      goal text,
+      status text default 'new',
+      created_at timestamptz default now()
+    );
+  end if;
+end
+$$;
+
+alter table public.workspace_requests enable row level security;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'workspace_requests'
+      and policyname = 'workspace_requests service insert'
+  ) then
+    create policy "workspace_requests service insert" on public.workspace_requests
+      for insert with check (auth.role() = 'service_role');
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'workspace_requests'
+      and policyname = 'workspace_requests service select'
+  ) then
+    create policy "workspace_requests service select" on public.workspace_requests
       for select using (auth.role() = 'service_role');
   end if;
 end

@@ -1,17 +1,12 @@
 "use server";
 
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export type AuthFormState = {
   status: "idle" | "error";
   message?: string;
-};
-
-export const authInitialState: AuthFormState = {
-  status: "idle",
-  message: "",
 };
 
 export async function loginAction(
@@ -26,7 +21,21 @@ export async function loginAction(
   }
 
   try {
-    const supabase = createServerActionClient({ cookies });
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      throw new Error("Supabase environment variables missing");
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      },
+    );
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -35,6 +44,14 @@ export async function loginAction(
     if (error) {
       return { status: "error", message: error.message };
     }
+
+    const cookieStore = await cookies();
+    cookieStore.set("cmms_admin_email", email, {
+      httpOnly: true,
+      sameSite: "lax",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      path: "/",
+    });
   } catch (error) {
     console.error("Login failed", error);
     return {
@@ -47,7 +64,7 @@ export async function loginAction(
 }
 
 export async function logoutAction() {
-  const supabase = createServerActionClient({ cookies });
-  await supabase.auth.signOut();
+  const cookieStore = await cookies();
+  cookieStore.delete("cmms_admin_email");
   redirect("/login");
 }
