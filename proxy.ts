@@ -11,6 +11,9 @@ export default async function proxy(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
+
+
+  
   const pathname = req.nextUrl.pathname;
   const requiresAuth = PROTECTED.some((path) => pathname.startsWith(path));
 
