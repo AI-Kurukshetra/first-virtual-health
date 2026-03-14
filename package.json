@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:service-key": "tsx scripts/check-service-key.ts"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.8.4",

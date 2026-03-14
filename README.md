@@ -39,13 +39,15 @@ Mock data for assets, work orders, inventory, safety alerts, vendors, and AI ins
 
 When connecting to Supabase or another backend, replace these mocks inside server components and route handlers with real queries, keeping the shape identical to maintain UI parity.
 
-## Feature coverage
+## Feature coverage (mapped to SRS)
 
-- **Asset & Work Order Management** - grid + timeline views show hierarchy, statuses, and SLA pressure.
-- **Preventive Maintenance** - schedule board demonstrates calendar slots and team ownership.
-- **Inventory/Vendor Management** - low-stock alerts, cost snapshots, and vendor scorecards.
-- **Safety & Insights** - alerts plus AI-driven recommendations ready for predictive maintenance inputs.
-- **API Readiness** - REST endpoints for assets/work-orders/inventory/insights illustrate how the frontend expects to consume data.
+- **Asset registry** — hierarchy, QR/barcode hook, warranties, meters; see `/dashboard` cards + `/api/assets`.
+- **Work orders & PM** — intake, routing, SLA clocks, preventive plans; timeline + schedule board mirror SRS flows.
+- **Inventory & vendors** — stock levels, reorder signals, supplier scorecards; inventory panel + `/api/inventory`.
+- **User roles & auth** — workspace login, admin login, Supabase-backed waitlist and workspace requests.
+- **Safety & insights** — alert panel and AI insight feed wired to `/api/insights`.
+- **MVP data model** — entities align with README SRS: Assets, WorkOrders, Inventory, Vendors, Locations, Users, etc.
+- **Extensible API surface** — mock routes for assets, work-orders, inventory, insights; ready to extend to `/analytics`, `/notifications`, `/mobile`, `/webhooks` per SRS.
 
 ## Next steps
 

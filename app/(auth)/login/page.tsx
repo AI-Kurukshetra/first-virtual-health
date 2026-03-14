@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { LoginCard } from "@/components/forms/login-card";
+import { CmmsLoginCard } from "@/components/forms/cmms-login-card";
 
 const benefits = [
   "Offline mode caches last 24h of work orders per technician.",
@@ -80,22 +80,22 @@ export default function LoginPage() {
         <div className="flex flex-col justify-center px-6 py-12 sm:px-12">
           <div className="mx-auto w-full max-w-md space-y-6">
             <div className="rounded-full border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/60">
-              CMMS Login
+              Workspace login
             </div>
             <p className="text-sm text-white/60">
-              Use corporate credentials or SSO. Need an account?{" "}
+              For technicians, planners, vendors. Need an account?{" "}
               <Link href="/signup" className="font-semibold text-emerald-300">
-                Create one
+                Register CMMS user
               </Link>
               .
             </p>
-            <LoginCard />
+            <CmmsLoginCard />
             <p className="text-xs text-white/60">
-              Reviewing requirements?{" "}
-              <Link href="/data-model" className="font-semibold text-emerald-300">
-                Inspect the data model
-              </Link>{" "}
-              to see how assets, work orders, and predictive signals connect.
+              Admins sign in at{" "}
+              <Link href="/admin/login" className="font-semibold text-emerald-300">
+                /admin/login
+              </Link>
+              .
             </p>
           </div>
         </div>

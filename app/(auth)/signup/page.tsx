@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SignupCard } from "@/components/forms/signup-card";
+import { CmmsRegisterCard } from "@/components/forms/cmms-register-card";
 
 const highlights = [
   "Asset registry with QR scanning & IoT meters in under 48 hours.",
@@ -20,18 +21,26 @@ export default function SignupPage() {
     <div className="min-h-screen bg-[#010203] text-white">
       <div className="grid min-h-screen lg:grid-cols-2">
         <div className="flex flex-col justify-center px-6 py-12 sm:px-12">
-          <div className="mx-auto w-full max-w-md space-y-6">
-            <div className="rounded-full border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/60">
-              Join the pilot
+          <div className="mx-auto w-full max-w-5xl space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="rounded-full border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/60">
+                Join the pilot
+              </div>
+              <p className="text-xs text-white/60">
+                Already verified?{" "}
+                <Link href="/login" className="font-semibold text-sky-300">
+                  Workspace login
+                </Link>{" "}
+                ·{" "}
+                <Link href="/admin/login" className="font-semibold text-sky-300">
+                  Admin login
+                </Link>
+              </p>
             </div>
-            <p className="text-sm text-white/60">
-              Already verified?{" "}
-              <Link href="/login" className="font-semibold text-sky-300">
-                Sign in
-              </Link>
-              .
-            </p>
-            <SignupCard />
+            <div className="grid gap-6 lg:grid-cols-2">
+              <SignupCard />
+              <CmmsRegisterCard />
+            </div>
             <p className="text-xs text-white/60">
               Need to review architecture before onboarding?{" "}
               <Link href="/data-model" className="font-semibold text-sky-300">

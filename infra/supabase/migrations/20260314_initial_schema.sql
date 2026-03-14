@@ -8,20 +8,70 @@ create extension if not exists postgis;
 ----------------------------------------------------------------
 -- 0. Helper types
 ----------------------------------------------------------------
-create type work_order_status as enum ('draft','scheduled','in_progress','blocked','completed','cancelled');
-create type work_order_priority as enum ('low','medium','high','critical');
-create type asset_status as enum ('online','maintenance','offline','degraded');
-create type asset_criticality as enum ('low','medium','high');
-create type schedule_type as enum ('calendar','meter');
-create type maintenance_type as enum ('corrective','preventive','inspection');
-create type notification_channel as enum ('email','sms','push','webhook');
-create type notification_status as enum ('queued','sent','failed');
-create type compliance_status as enum ('pending','passed','failed');
-create type vendor_contract_type as enum ('service','warranty','rental');
+do $$
+begin
+  if not exists (select 1 from pg_type where typname = 'work_order_status') then
+    create type work_order_status as enum ('draft','scheduled','in_progress','blocked','completed','cancelled');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'work_order_priority') then
+    create type work_order_priority as enum ('low','medium','high','critical');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'asset_status') then
+    create type asset_status as enum ('online','maintenance','offline','degraded');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'asset_criticality') then
+    create type asset_criticality as enum ('low','medium','high');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'schedule_type') then
+    create type schedule_type as enum ('calendar','meter');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'maintenance_type') then
+    create type maintenance_type as enum ('corrective','preventive','inspection');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'notification_channel') then
+    create type notification_channel as enum ('email','sms','push','webhook');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'notification_status') then
+    create type notification_status as enum ('queued','sent','failed');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'compliance_status') then
+    create type compliance_status as enum ('pending','passed','failed');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'vendor_contract_type') then
+    create type vendor_contract_type as enum ('service','warranty','rental');
+  end if;
+end $$;
 
 ----------------------------------------------------------------
 -- 1. Identity & Access
 ----------------------------------------------------------------
+create table if not exists public.admin_users (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  full_name text,
+  role text default 'admin',
+  status text default 'active',
+  created_at timestamptz default now()
+);
+
+create table if not exists public.cmms_users (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  full_name text,
+  role text default 'technician',
+  status text default 'active',
+  created_at timestamptz default now()
+);
+
 create table if not exists public.organizations (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -459,10 +509,52 @@ alter table public.webhooks enable row level security;
 alter table public.predictive_insights enable row level security;
 alter table public.automation_rules enable row level security;
 alter table public.waitlist enable row level security;
+alter table public.admin_users enable row level security;
+alter table public.cmms_users enable row level security;
 alter table if exists public.workspace_requests enable row level security;
 
 do $$
 begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'admin_users'
+      and policyname = 'admin_users service select'
+  ) then
+    create policy "admin_users service select" on public.admin_users
+      for select using (auth.role() = 'service_role');
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'admin_users'
+      and policyname = 'admin_users service insert'
+  ) then
+    create policy "admin_users service insert" on public.admin_users
+      for insert with check (auth.role() = 'service_role');
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'cmms_users'
+      and policyname = 'cmms_users service select'
+  ) then
+    create policy "cmms_users service select" on public.cmms_users
+      for select using (auth.role() = 'service_role');
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'cmms_users'
+      and policyname = 'cmms_users service insert'
+  ) then
+    create policy "cmms_users service insert" on public.cmms_users
+      for insert with check (auth.role() = 'service_role');
+  end if;
+
   if not exists (
     select 1 from pg_policies
     where schemaname = 'public'
@@ -530,3 +622,4 @@ begin
   end if;
 end
 $$;
+
